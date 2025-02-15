@@ -22,30 +22,21 @@ jobs:
       - name: Read and increment version
         id: version
         run: |
-          # Ensure VERSION file exists, otherwise create one
           if [ ! -f VERSION ]; then
             echo "1.0.0" > VERSION
           fi
 
-          # Read the current version
           CURRENT_VERSION=$(cat VERSION)
           echo "Current version: $CURRENT_VERSION"
 
-          # Parse the version (supporting both major.minor and major.minor.patch)
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-
-          # If PATCH is empty (only MAJOR.MINOR exists), initialize it as 0
           PATCH=${PATCH:-0}
 
-          # Increment the PATCH version
           NEW_PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
           echo "New version: $NEW_VERSION"
 
-          # Update the VERSION file
           echo "$NEW_VERSION" > VERSION
-
-          # Use environment file for setting output
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Build and push Docker image
@@ -55,3 +46,8 @@ jobs:
           push: true
           tags: bharath415/node:${{ env.VERSION }}
 
+      - name: Upload VERSION file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: version-file
+          path: VERSION
