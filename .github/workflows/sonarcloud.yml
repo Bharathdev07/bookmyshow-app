@@ -55,11 +55,3 @@ jobs:
           push: true
           tags: bharath415/node:${{ env.VERSION }}
 
-      - name: Commit updated VERSION file
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-          git add VERSION
-          git commit -m "Increment version to ${{ env.VERSION }}"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:master
